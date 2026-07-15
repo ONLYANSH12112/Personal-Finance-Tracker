@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database import get_db_connection
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
+import tempfile
 
 app = Flask(__name__)
 app.secret_key = "finance_tracker_secret"
@@ -267,7 +268,10 @@ def download_pdf():
     cursor.close()
     conn.close()
 
-    pdf_file = "finance_report.pdf"
+    pdf_file = tempfile.NamedTemporaryFile(
+    delete=False,
+    suffix=".pdf"
+    ).name
 
     doc = SimpleDocTemplate(pdf_file)
 
@@ -345,26 +349,37 @@ def signup():
                 "signup.html",
                 error="Passwords do not match!"
             )
-            
+
         conn = get_db_connection()
         cursor = conn.cursor()
 
+    try:
+
         cursor.execute(
-            """
-            INSERT INTO users(username, password)
-            VALUES(%s,%s)
-            """,
-            (username, hashed_password)
-        )
+        """
+        INSERT INTO users(username, password)
+        VALUES(%s,%s)
+        """,
+        (username, hashed_password)
+    )
 
         conn.commit()
 
+    except Exception:
+
+        conn.rollback()
         cursor.close()
         conn.close()
 
-        return redirect("/login")
+        return render_template(
+            "signup.html",
+            error="Username already exists!"
+        )
 
-    return render_template("signup.html")
+    cursor.close()
+    conn.close()
+
+    return redirect("/login")
 
 # LOGIN ROUTE
 
@@ -415,4 +430,8 @@ def logout():
     return redirect("/login")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )

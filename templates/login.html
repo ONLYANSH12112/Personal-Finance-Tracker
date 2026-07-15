@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='login.css') }}">
+
+</head>
+
+<body>
+
+{% if error %}
+<div id="popup" class="popup">
+
+    <div class="popup-box">
+
+        <span class="close" onclick="closePopup()">&times;</span>
+
+        <h2>Error</h2>
+
+        <p>{{ error }}</p>
+
+        <button onclick="closePopup()">
+            OK
+        </button>
+
+    </div>
+
+</div>
+{% endif %}
+
+<div class="main-container">
+
+<div class="login-card">
+
+<h1 class="title">
+Personal Finance Tracker
+</h1>
+
+<p class="subtitle">
+Manage Your Money Smartly
+</p>
+
+<form method="POST">
+
+<label>Username</label>
+
+<input
+type="text"
+name="username"
+placeholder="Enter Username"
+required>
+
+<label>Password</label>
+
+<input
+type="password"
+name="password"
+placeholder="Enter Password"
+required>
+
+<button>
+
+Login
+
+</button>
+
+</form>
+
+<div class="bottom-text">
+
+Don't have an account?
+
+<br><br>
+
+<a href="/signup">
+
+Create Account
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+<script>
+function closePopup(){
+
+    document.getElementById("popup").style.display="none";
+
+}
+</script>
+</body>
+
+</html>

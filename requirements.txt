@@ -1,5 +1,5 @@
 Flask
 gunicorn
-mysql-connector-python
+psycopg2-binary
 reportlab
 Werkzeug

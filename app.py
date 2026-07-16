@@ -342,7 +342,6 @@ def signup():
         username = request.form["username"]
         password = request.form["password"]
         confirm_password = request.form["confirm_password"]
-        hashed_password = generate_password_hash(password)
 
         if password != confirm_password:
             return render_template(
@@ -350,36 +349,40 @@ def signup():
                 error="Passwords do not match!"
             )
 
+        hashed_password = generate_password_hash(password)
+
         conn = get_db_connection()
         cursor = conn.cursor()
 
-    try:
+        try:
 
-        cursor.execute(
-        """
-        INSERT INTO users(username, password)
-        VALUES(%s,%s)
-        """,
-        (username, hashed_password)
-    )
+            cursor.execute(
+                """
+                INSERT INTO users(username, password)
+                VALUES(%s,%s)
+                """,
+                (username, hashed_password)
+            )
 
-        conn.commit()
+            conn.commit()
 
-    except Exception:
+        except Exception:
 
-        conn.rollback()
-        cursor.close()
-        conn.close()
+            conn.rollback()
 
-        return render_template(
-            "signup.html",
-            error="Username already exists!"
-        )
+            return render_template(
+                "signup.html",
+                error="Username already exists!"
+            )
 
-    cursor.close()
-    conn.close()
+        finally:
 
-    return redirect("/login")
+            cursor.close()
+            conn.close()
+
+        return redirect("/login")
+
+    return render_template("signup.html")
 
 # LOGIN ROUTE
 
